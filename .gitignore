@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Contains the NPS API key -- never commit this!
+apikey.properties

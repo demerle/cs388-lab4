@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">lab4</string>
+    <string name="campgrounds_title">Campgrounds</string>
+    <string name="campground_image">Campground photo</string>
 </resources>
