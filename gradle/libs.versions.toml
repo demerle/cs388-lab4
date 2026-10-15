@@ -13,6 +13,9 @@ asynchttpclient = "2.2.0"
 glide = "4.16.0"
 kotlinxSerializationJson = "1.9.0"
 kotlinSerializationPlugin = "2.2.10"
+room = "2.7.2"
+ksp = "2.3.6"
+lifecycleRuntimeKtx = "2.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,8 +30,13 @@ androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview"
 codepath-asynchttpclient = { group = "com.codepath.libraries", name = "asynchttpclient", version.ref = "asynchttpclient" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationPlugin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 

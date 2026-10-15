@@ -9,11 +9,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codepath.asynchttpclient.AsyncHttpClient
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.Headers
 import org.json.JSONException
@@ -57,6 +60,24 @@ class MainActivity : AppCompatActivity() {
         )
         campgroundAdapter = CampgroundAdapter(this, campgrounds)
         campgroundsRecyclerView.adapter = campgroundAdapter
+
+        // Step 7: Load items from the database. The database is the single
+        // source of truth, so the UI is updated whenever its contents change.
+        lifecycleScope.launch {
+            (application as CampgroundApplication).db.campgroundDao().getAll().collect { databaseList ->
+                val mappedList = databaseList.map { entity ->
+                    Campground(
+                        entity.name,
+                        entity.description,
+                        entity.latLong,
+                        listOf(CampgroundImage(entity.imageUrl, null))
+                    )
+                }
+                campgrounds.clear()
+                campgrounds.addAll(mappedList)
+                campgroundAdapter.notifyDataSetChanged()
+            }
+        }
 
         fetchCampgrounds()
     }
@@ -106,12 +127,24 @@ class MainActivity : AppCompatActivity() {
                         json.jsonObject.toString()
                     )
 
-                    // Save the campgrounds and reload the screen
+                    // Instead of updating the UI directly, cache the fresh
+                    // data in the database (delete old cache entries first).
+                    // The Flow collector in onCreate() handles the UI update.
                     parsedJson.data?.let { list ->
-                        campgrounds.addAll(list)
-
-                        // Notify the adapter that the dataset has changed
-                        campgroundAdapter.notifyDataSetChanged()
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val dao = (application as CampgroundApplication).db.campgroundDao()
+                            dao.deleteAll()
+                            dao.insertAll(
+                                list.map {
+                                    CampgroundEntity(
+                                        name = it.name,
+                                        description = it.description,
+                                        latLong = it.latLong,
+                                        imageUrl = it.imageUrl
+                                    )
+                                }
+                            )
+                        }
                     }
                 } catch (e: JSONException) {
                     Log.e(TAG, "Exception: $e")
